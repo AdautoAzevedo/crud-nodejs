@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic CRUD</title>
+</head>
+<body>
+    <label for="hero__name">Name:</label>
+    <input type="text" id="hero__name" name="hero__name">
+    <label for="id">id:</label>
+    <input type="text" id="id" name="id">
+    <button id="crt__btn">Create</button>
+    <button id="rd__btn">Read</button>
+    <button id="put__btn">Update</button>
+    <button id="del__btn">Delete</button>
+</body>
+<script>
+
+    const baseURL = "http://localhost:3500/api"
+    const crtBtn = document.querySelector("#crt__btn");
+    const rdBtn = document.querySelector("#rd__btn");
+    const putBtn = document.querySelector("#put__btn");
+    const delBtn = document.querySelector("#del__btn");
+    let name = document.querySelector("#hero__name");
+    let id = document.querySelector("#id");
+    let idNumber;
+
+    const hero = {
+        name: ""
+    };
+
+    crtBtn.addEventListener('click', ()=> {
+        getDataFromForm();
+        createData();
+    });
+
+    rdBtn.addEventListener('click', ()=> {
+        getData();
+        
+    });
+
+    putBtn.addEventListener('click', ()=> {
+        getDataFromForm();
+        putData();
+    });
+
+    delBtn.addEventListener('click', ()=> {
+        getDataFromForm();
+        deleteData();
+    });
+
+    const createData = async () =>{
+        try {
+            const response = await fetch(baseURL,{
+                method:"POST",
+                headers:{
+                    "Content-type":"application/json"
+                }, 
+                body:JSON.stringify(hero)
+            });
+            if(!response.ok){
+                const message = response.status;
+                throw new Error(message);
+            }
+            
+        } catch (error) {
+            console.log('error')
+        }
+    };
+    const getData = async () =>{
+        try {
+            const response = await fetch(baseURL,{
+                method:"GET"
+            });
+            if(!response.ok){
+                const message = response.status;
+                throw new Error(message);
+            }
+            
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log('error')
+        }
+    };
+
+    const putData = async () =>{
+        try {
+            const response = await fetch(baseURL+`/${idNumber}`,{
+                method:"PUT",
+                headers:{
+                    "Content-type":"application/json"
+                }, 
+                body:JSON.stringify(hero)
+            });
+            if(!response.ok){
+                const message = response.status;
+                throw new Error(message);
+            }
+            
+        } catch (error) {
+            console.log('error')
+        }
+    };
+   
+    const deleteData = async () =>{
+        try {
+            const response = await fetch(baseURL+`/${idNumber}`,{
+                method:"DELETE"
+            });
+            if(!response.ok){
+                const message = response.status;
+                throw new Error(message);
+            }
+            
+        } catch (error) {
+            console.log('error')
+        }
+    };
+
+    const getDataFromForm = () => {
+        hero.name = name.value;
+        idNumber = id.value;
+        console.log(hero);
+    };
+
+</script>
+</html>
