@@ -12,6 +12,7 @@
     <input type="text" id="id" name="id">
     <button id="crt__btn">Create</button>
     <button id="rd__btn">Read</button>
+    <button id="get__id__btn">Read by id</button>
     <button id="put__btn">Update</button>
     <button id="del__btn">Delete</button>
 </body>
@@ -19,7 +20,8 @@
 
     const baseURL = "http://localhost:3500/api"
     const crtBtn = document.querySelector("#crt__btn");
-    const rdBtn = document.querySelector("#rd__btn");
+    const rdBtn = document.querySelector("#rd__btn");    
+    const rdByIdBtn = document.querySelector("#get__id__btn");    
     const putBtn = document.querySelector("#put__btn");
     const delBtn = document.querySelector("#del__btn");
     let name = document.querySelector("#hero__name");
@@ -37,7 +39,11 @@
 
     rdBtn.addEventListener('click', ()=> {
         getData();
-        
+    });
+
+    rdByIdBtn.addEventListener('click', ()=> {
+        getDataFromForm();
+        getDataById();
     });
 
     putBtn.addEventListener('click', ()=> {
@@ -71,6 +77,24 @@
     const getData = async () =>{
         try {
             const response = await fetch(baseURL,{
+                method:"GET"
+            });
+            if(!response.ok){
+                const message = response.status;
+                throw new Error(message);
+            }
+            
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log('error')
+        }
+    };
+
+    
+    const getDataById = async () =>{
+        try {
+            const response = await fetch(baseURL+`/${idNumber}`,{
                 method:"GET"
             });
             if(!response.ok){
