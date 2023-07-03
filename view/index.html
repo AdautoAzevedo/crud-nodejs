@@ -74,6 +74,7 @@
             console.log('error')
         }
     };
+
     const getData = async () =>{
         try {
             const response = await fetch(baseURL,{
@@ -91,7 +92,6 @@
         }
     };
 
-    
     const getDataById = async () =>{
         try {
             const response = await fetch(baseURL+`/${idNumber}`,{

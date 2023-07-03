@@ -1,36 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const fsPromises = require('fs').promises;
-const path = require('path');
-
-const heroes = [];
+const db = require('../../dbConnector');
 
 router.route('/')
-    .get((req,res)=>{
+    .get( async (req,res)=>{
+        const [heroes] = await db.query('SELECT * FROM heroes');
         return res.json(heroes);
     })
-    .post((req, res)=>{
+    .post(async (req, res)=>{
         const {name} = req.body;
-        heroes.push(name);
-        return res.json(heroes);
+        const data = await db.query('INSERT INTO heroes (hero_name) VALUES (?)', [name]);
+        return res.json(data);
     });
 
 router.route('/:index')
-    .put((req, res) => {
+    .put( async (req, res) => {
         const { index } = req.params;
         const {name} = req.body;
-        heroes[index] = name;
-        return res.json(heroes);
+        const data = await db.query('UPDATE heroes SET hero_name = (?) WHERE hero_id = ?', [name, index]);
+        return res.json(data);
     })
-    .delete((req, res) =>{
+    .delete( async (req, res) =>{
         const { index } = req.params;
-        const {name} = req.body;
-        heroes.splice(index, 1); 
-        return res.json(heroes);
+        const data = await db.query('DELETE FROM heroes WHERE hero_id = ?', [index]);
+        return res.json(data);
     })
-    .get((req, res) =>{
-        const {index} = req.params;
-        return res.json(heroes[index]);
+    .get( async (req, res) =>{
+        const [hero] = await db.query('SELECT * FROM heroes WHERE hero_id = ?', [req.params.index]);
+        res.json(hero);
     });
 
 module.exports = router;
