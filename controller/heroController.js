@@ -1,32 +1,70 @@
-const db = require('../dbConnector');
+const Hero = require("../model/hero");
 
 const getAllHeroes = async (req,res)=>{
-    const [heroes] = await db.query('SELECT * FROM heroes');
-    return res.json(heroes);
+    try {
+        const heroesList = await Hero.findAll();
+        console.log(heroesList);
+        return res.json(heroesList);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
 };
 
 const createNewHero = async (req, res)=>{
     const {name} = req.body;
-    const data = await db.query('INSERT INTO heroes (hero_name) VALUES (?)', [name]);
-    return res.json(data);
+    try {
+        const  newHero = await Hero.create(
+            {hero_name: name}
+        );
+        console.log(newHero);
+        console.log(newHero.toJSON());
+        return res.json(newHero);
+    } catch (error) {
+        res.status(500).json({error: error.message});        
+    };
 };
 
 const updateHero = async (req, res) => {
     const { index } = req.params;
     const {name} = req.body;
-    const data = await db.query('UPDATE heroes SET hero_name = (?) WHERE hero_id = ?', [name, index]);
-    return res.json(data);
+    try {
+        const updatedHero = await Hero.update(
+            {hero_name: name},
+            {where: {hero_id: index}}
+        );
+        console.log(updatedHero);
+        return res.json(updatedHero);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    };  
 };
 
 const deleteHero = async (req, res) =>{
     const { index } = req.params;
-    const data = await db.query('DELETE FROM heroes WHERE hero_id = ?', [index]);
-    return res.json(data);
+   try {
+    const result = await Hero.destroy({where: {hero_id: index}});
+    console.log(result);
+    return res.json(result);
+   } catch (error) {
+    res.status(500).json({error: error.message});
+   };
 };
 
 const getHeroById = async (req, res) =>{
-    const [hero] = await db.query('SELECT * FROM heroes WHERE hero_id = ?', [req.params.index]);
-    res.json(hero);
+    const {index} = req.params;
+    try {
+        const hero = await Hero.findByPk(index);
+        if (hero) {
+            console.log(hero);
+            return res.json(hero);            
+        } else {
+            console.log('Hero not found');
+            return res.json("Hero not found");
+        }
+        
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
 };
 
 module.exports = {
